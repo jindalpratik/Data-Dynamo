@@ -8,25 +8,34 @@
     </head>
     <body>
         <div class="container">
-            <h2>Generate Listing Data</h2>
-            <form id="upload-form">
-                <input type="file" id="image-upload" accept="image/*" capture>
-                <button type="submit">Generate Listing Data</button>
+            <h2>Search for a Product</h2>
+            <form id="search-form">
+                <input type="text" id="search-query" placeholder="Enter product ID or name">
+                <button type="submit">Search</button>
             </form>
-            <div id="loader" class="loader"></div>
-            <div id="image-container">
-                <div class="image-box">
-                    <img id="image-preview" src="" alt="Selected Image will be shown here">
-                    <!-- <p class="image-description">Image 1</p> -->
+            <div id="product-details"></div>
+
+            <div id="generate-listing-section" style="display: none;">
+                <h2>Generate Listing Data</h2>
+                <form id="upload-form">
+                    <input type="file" id="image-upload" accept="image/*" capture>
+                    <button type="submit">Generate Listing Data</button>
+                </form>
+                <div id="loader" class="loader"></div>
+                <div id="image-container">
+                    <div class="image-box">
+                        <img id="image-preview" src="" alt="Selected Image will be shown here">
+                        <!-- <p class="image-description">Image 1</p> -->
+                    </div>
+                    <div class="image-box">
+                        <img id="processed-image" src="" alt="Processed image will appear here">
+                        <!-- <p class="image-description">Image 2</p> -->
+                    </div>
                 </div>
-                <div class="image-box">
-                    <img id="processed-image" src="" alt="Processed image will appear here">
-                    <!-- <p class="image-description">Image 2</p> -->
-                </div>
+                <div id="blog-post"></div>
             </div>
-            <div id="blog-post"></div>
-        </div>
-        <div id="form-container"></div>
-        <script src="script.js"></script>
+
+            <div id="form-container"></div>
+            <script src="script.js"></script>
     </body>
 </html>

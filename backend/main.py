@@ -127,7 +127,7 @@ if __name__ == "__main__":
 
 @app.put("/update_product/{product_id}")
 async def update_product(product_id: str, product: Product):
-    conn = sqlite3.connect('database.db')
+    conn = sqlite3.connect('database.sqlite')
     c = conn.cursor()
 
     c.execute('''
@@ -156,7 +156,7 @@ async def update_product(product_id: str, product: Product):
 
 @app.post("/add_product")
 async def add_product(product: Product):
-    conn = sqlite3.connect('database.db')
+    conn = sqlite3.connect('database.sqlite')
     c = conn.cursor()
 
     c.execute('''
@@ -180,3 +180,34 @@ async def add_product(product: Product):
     conn.close()
 
     return {"message": "Product added successfully"}
+
+@app.get("/search_product/{query}")
+async def search_product(query: str):
+    conn = sqlite3.connect('database.sqlite')
+    c = conn.cursor()
+
+    c.execute('''
+        SELECT * FROM products WHERE product_id = ? OR item_name = ?
+    ''', (query, query))
+
+    product = c.fetchone()
+
+    conn.close()
+
+    # Map the product details to the desired format
+    product_details = {
+        "Product Id": product[0],
+        "Item Name": product[1],
+        "Product type": product[2],
+        "Description": product[3],
+        "Brand Name": product[4],
+        "Country": product[5],
+        "Your Price": product[6],
+        "Quantity": product[7],
+        "M.R.P": product[8],
+        "FullFillment": product[9],
+        "Manufacturer": product[10],
+        "Contact No.": product[11]
+    }
+
+    return {"product": product_details}
