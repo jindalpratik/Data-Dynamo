@@ -153,11 +153,12 @@ document
                     select.appendChild(defaultOption);
 
                     // Create an option for the product details
-                    const productOption = document.createElement("option");
-                    name = data.product["Item Name"];
-                    productOption.value = JSON.stringify(data.product);
-                    productOption.textContent = `Product: ${name}`;
-                    select.appendChild(productOption);
+                    data.products.forEach((product) => {
+                        const productOption = document.createElement("option");
+                        productOption.value = JSON.stringify(product);
+                        productOption.textContent = `Product: ${product["Item Name"]}`;
+                        select.appendChild(productOption);
+                    });
 
                     // Create an option for adding a new listing
                     const newListingOption = document.createElement("option");

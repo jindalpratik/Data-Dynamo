@@ -190,26 +190,31 @@ async def search_product(query: str):
     SELECT * FROM products WHERE product_id LIKE ? OR item_name LIKE ?
 ''', ('%' + query + '%', '%' + query + '%'))
 
-    product = c.fetchone()
+# Fetch all products that match the search query
+    products = c.fetchall() 
 
     conn.close()
-    
-    if product is None:
-        raise HTTPException(status_code=404, detail="Product not found")
-    # Map the product details to the desired format
-    product_details = {
-        "Product Id": product[0],
-        "Item Name": product[1],
-        "Product type": product[2],
-        "Description": product[3],
-        "Brand Name": product[4],
-        "Country": product[5],
-        "Your Price": product[6],
-        "Quantity": product[7],
-        "M.R.P": product[8],
-        "FullFillment": product[9],
-        "Manufacturer": product[10],
-        "Contact No.": product[11]
-    }
 
-    return {"product": product_details}
+    if not products:
+        raise HTTPException(status_code=404, detail="Product not found")
+
+    # Map the product details to the desired format
+    product_details = [
+        {
+            "Product Id": product[0],
+            "Item Name": product[1],
+            "Product type": product[2],
+            "Description": product[3],
+            "Brand Name": product[4],
+            "Country": product[5],
+            "Your Price": product[6],
+            "Quantity": product[7],
+            "M.R.P": product[8],
+            "FullFillment": product[9],
+            "Manufacturer": product[10],
+            "Contact No.": product[11]
+        }
+        for product in products
+    ]
+
+    return {"products": product_details}
