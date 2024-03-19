@@ -28,8 +28,8 @@ img = PIL.Image.open(r".\output_CjnS0vNTsVis_0.png")
 
 model = genai.GenerativeModel('gemini-pro-vision')
 
-response = model.generate_content(img)
-
+response = model.generate_content(["Write a short, engaging blog post based on this picture.", img], stream=True)
+response.resolve()
 print(response.text)
 
 

@@ -1,3 +1,11 @@
+import pathlib
+import textwrap
+
+import google.generativeai as genai
+
+from IPython.display import display
+from IPython.display import Markdown
+
 from fastapi import FastAPI, UploadFile, File, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
@@ -6,7 +14,17 @@ from PIL import Image
 import io
 import uvicorn
 
+import os
+# importing necessary functions from dotenv library
+from dotenv import load_dotenv, dotenv_values 
+import logging
+# loading variables from .env file
+load_dotenv()
+
 app = FastAPI()
+
+GOOGLE_API_KEY=os.getenv("GOOGLE_API_KEY")
+genai.configure(api_key=GOOGLE_API_KEY)
 
 # Allow all origins (for development purposes)
 app.add_middleware(
@@ -16,6 +34,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+def to_markdown(text):
+  text = text.replace('•', '  *')
+  return Markdown(textwrap.indent(text, '> ', predicate=lambda _: True))
 
 def remove_background_task(image_file):
     input = image_file.read()
@@ -37,5 +59,17 @@ async def remove_background(image: UploadFile = File(...)):
     processed_image_data = remove_background_task(image.file)
     return StreamingResponse(io.BytesIO(processed_image_data), media_type="image/png")
 
+
+@app.post("/generate_blog_post")
+async def generate_blog_post(image: UploadFile = File(...)):
+    img = Image.open(image.file)
+
+    model = genai.GenerativeModel('gemini-pro-vision')
+
+    response = model.generate_content(["Write a consice description of this product for a listing on amazon.", img], stream=True)
+    response.resolve()
+    return response.text
+
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=9080)
+    logging.basicConfig(level=logging.INFO)
+    uvicorn.run("main:app", host="0.0.0.0", port=9080, reload=True)

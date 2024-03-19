@@ -1,20 +1,20 @@
 from rembg import remove
+from PIL import Image
 
-input_path = 'input.png'
-output_path = 'output.png'
+input_path = r'./preview16.jpg'
+output_path = r'output.png'
 
-with open(input_path, 'rb') as i:
-    with open(output_path, 'wb') as o:
-        input = i.read()
-        output = remove(input)
-        # Convert the output image to have a black background
-        output = output.convert("RGBA")
-        data = output.getdata()
+input = Image.open(input_path)
+output = remove(input)
+output = output.convert("RGBA")
+data = output.getdata()
 
-        new_data = []
-        for item in data:
-            # Set the alpha value to 255 (fully opaque) for all pixels
-            new_data.append((item[0], item[1], item[2], 255))
+new_data = []
+for item in data:
+    if item[3] == 0:  # check if alpha value is 0 (transparent)
+        new_data.append((0, 0, 0, 255))  # set RGB values to black
+    else:
+        new_data.append(item)
 
-        output.putdata(new_data)
-        o.write(output)
+output.putdata(new_data)
+output.save(output_path)
