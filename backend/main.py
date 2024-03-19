@@ -13,6 +13,7 @@ from rembg import remove
 from PIL import Image
 import io
 import uvicorn
+import json
 
 import os
 # importing necessary functions from dotenv library
@@ -38,6 +39,17 @@ app.add_middleware(
 def to_markdown(text):
   text = text.replace('•', '  *')
   return Markdown(textwrap.indent(text, '> ', predicate=lambda _: True))
+
+def convert_gemini_output_to_json(gemini_output):
+    # Find the start and end of the JSON part of the string
+    start = gemini_output.find('{')
+    end = gemini_output.rfind('}') + 1
+
+    # Extract the JSON part of the string
+    json_string = gemini_output[start:end]
+
+    # Parse the JSON string into a Python dictionary
+    return json.loads(json_string)
 
 def remove_background_task(image_file):
     input = image_file.read()
@@ -66,9 +78,9 @@ async def generate_blog_post(image: UploadFile = File(...)):
 
     model = genai.GenerativeModel('gemini-pro-vision')
 
-    response = model.generate_content(["Write a consice description of this product for a listing on amazon.", img], stream=True)
+    response = model.generate_content(["""Provide an amazon listing and provide the response in the follwing json format {"Item Name":"","Product type":"","Description":"" }""", img], stream=True)
     response.resolve()
-    return response.text
+    return convert_gemini_output_to_json(response.text)
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)

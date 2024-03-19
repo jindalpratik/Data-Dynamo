@@ -11,11 +11,21 @@
             <h2>Generate Blog Post</h2>
             <form id="upload-form">
                 <input type="file" id="image-upload" accept="image/*" capture>
-                <button type="submit">Generate Blog Post</button>
+                <button type="submit">Generate Listing Data</button>
             </form>
-            <img id="processed-image" src="" alt="Processed image will appear here">
+            <div id="image-container">
+                <div class="image-box">
+                    <img id="image-preview" src="" alt="Selected Image will be shown here">
+                    <!-- <p class="image-description">Image 1</p> -->
+                </div>
+                <div class="image-box">
+                    <img id="processed-image" src="" alt="Processed image will appear here">
+                    <!-- <p class="image-description">Image 2</p> -->
+                </div>
+            </div>
             <div id="blog-post"></div>
         </div>
+        <div id="form-container"></div>
         <script src="script.js"></script>
     </body>
 </html>
