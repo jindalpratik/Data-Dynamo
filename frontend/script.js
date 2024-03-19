@@ -62,27 +62,52 @@ document
                     "Contact No.": "65415465",
                 });
 
+                dict = ({
+                    "Product Id":'product_id',
+                    "Item Name":'item_name',
+                    "Product type":'product_type',
+                    "Description":'description',
+                    "Brand Name":'brand_name',
+                    'Country': 'country',
+                    'Your Price': 'your_price',
+                    'Quantity': 'quantity',
+                    'M.R.P': 'mrp',
+                    'FullFillment': 'fulfillment',
+                    'Manufacturer': 'manufacturer',
+                    'Contact No.': "contact_no"
+                })
+
                 data = {...data, ...data2}
                 for (const key in data) {
                     const label = document.createElement("label");
                     label.for = key;
                     label.textContent = key + ":";
-
-                    const textarea = document.createElement("textarea");
-                    textarea.id = key;
-                    textarea.name = key;
-                    textarea.value = data[key];
-
-                    const adjustHeight = () => {
-                        textarea.style.height = 'auto';
-                        textarea.style.height = textarea.scrollHeight + 'px';
-                    };
-                
-                    // Adjust the height immediately
-                    adjustHeight();
-
+                    // console.log(key);
                     form.appendChild(label);
-                    form.appendChild(textarea);
+
+                    if (["Product Id", "Item Name", "Product type", "Description", "Brand Name", "Country", "FullFillment", "Manufacturer", "Contact No."].includes(key)) {
+                        const textarea = document.createElement("textarea");
+                        textarea.id = key;
+                        textarea.name = key;
+                        textarea.value = data[key];
+
+                        const adjustHeight = () => {
+                            textarea.style.height = 'auto';
+                            textarea.style.height = textarea.scrollHeight + 'px';
+                        };
+
+                        // Adjust the height immediately
+                        adjustHeight();
+
+                        form.appendChild(textarea);
+                    } else {
+                        let num_input = document.createElement('input');
+                        num_input.id = key;
+                        num_input.name = key;
+                        num_input.type = 'number';  
+                        num_input.value = parseInt(data[key]);
+                        form.appendChild(num_input);
+                    }
                 }
 
                 const submitButton = document.createElement("input");

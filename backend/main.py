@@ -5,7 +5,7 @@ import google.generativeai as genai
 from IPython.display import display
 from IPython.display import Markdown
 
-from fastapi import FastAPI, UploadFile, File, BackgroundTasks
+from fastapi import FastAPI, HTTPException, UploadFile, File, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
@@ -29,7 +29,6 @@ GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 genai.configure(api_key=GOOGLE_API_KEY)
 
 db = sqlite3.connect('database.sqlite')
-
 c = db.cursor()
 
 c.execute('''CREATE TABLE if not exists products 
@@ -43,8 +42,23 @@ c.execute('''CREATE TABLE if not exists products
           contact_no TEXT)''')
 
 db.commit()
-
 db.close()
+
+
+class Product(BaseModel):
+    product_id: str
+    item_name: str
+    product_type: str
+    description: str
+    brand_name: str
+    country: str
+    your_price: float
+    quantity: int
+    mrp: float
+    fulfillment: str
+    manufacturer: str
+    contact_no: str
+
 
 # Allow all origins (for development purposes)
 app.add_middleware(
@@ -110,3 +124,59 @@ async def generate_blog_post(image: UploadFile = File(...)):
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     uvicorn.run("main:app", host="0.0.0.0", port=9080, reload=True)
+
+@app.put("/update_product/{product_id}")
+async def update_product(product_id: str, product: Product):
+    conn = sqlite3.connect('database.db')
+    c = conn.cursor()
+
+    c.execute('''
+        UPDATE products SET
+            item_name = ?,
+            product_type = ?,
+            description = ?,
+            brand_name = ?,
+            country = ?,
+            your_price = ?,
+            quantity = ?,
+            mrp = ?,
+            fulfillment = ?,
+            manufacturer = ?,
+            contact_no = ?
+        WHERE product_id = ?
+    ''', (product.item_name, product.product_type, product.description, product.brand_name, product.country, product.your_price, product.quantity, product.mrp, product.fulfillment, product.manufacturer, product.contact_no, product_id))
+
+    if c.rowcount == 0:
+        raise HTTPException(status_code=404, detail="Product not found")
+
+    conn.commit()
+    conn.close()
+
+    return {"message": "Product updated successfully"}
+
+@app.post("/add_product")
+async def add_product(product: Product):
+    conn = sqlite3.connect('database.db')
+    c = conn.cursor()
+
+    c.execute('''
+        INSERT INTO products (
+            product_id,
+            item_name,
+            product_type,
+            description,
+            brand_name,
+            country,
+            your_price,
+            quantity,
+            mrp,
+            fulfillment,
+            manufacturer,
+            contact_no
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ''', (product.product_id, product.item_name, product.product_type, product.description, product.brand_name, product.country, product.your_price, product.quantity, product.mrp, product.fulfillment, product.manufacturer, product.contact_no))
+
+    conn.commit()
+    conn.close()
+
+    return {"message": "Product added successfully"}
