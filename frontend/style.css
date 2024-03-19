@@ -2,8 +2,8 @@ body {
     font-family: 'Roboto', sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f4f4f4;
-    color: #333;
+    background-color: #ECEFF1; /* Blue Grey 50 */
+    color: #37474F; /* Blue Grey 800 */
 }
 
 .container {
@@ -122,4 +122,55 @@ button:hover {
 
 #image-container .image-description {
     margin-top: 10px;
+    color: #546E7A; /* Blue Grey 600 */
+}
+
+#json-data-form {
+    background-color: #FFFFFF; /* White */
+    padding: 20px;
+    border-radius: 4px; /* Material Design rounded corners */
+    box-shadow: 0px 2px 10px rgba(0,0,0,0.2); /* Material Design shadow */
+}
+
+#json-data-form input[type="submit"] {
+    background-color: #FF5722; /* Deep Orange 500 */
+    color: #FFFFFF; /* White */
+    border: none;
+    margin: 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#json-data-form input[type="submit"]:hover {
+    background-color: #E64A19; /* Deep Orange 700 */
+}
+
+#json-data-form textarea {
+    font-family: 'Roboto', sans-serif;
+    width: 100%;
+    min-height: 50px;
+    resize: vertical;
+    padding: 10px;
+    border: 1px solid #BDBDBD; /* Grey 400 */
+    border-radius: 4px;
+}
+
+.loader {
+    border: 16px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 16px solid #3498db;
+    width: 120px;
+    height: 120px;
+    animation: spin 2s linear infinite;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: none;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
