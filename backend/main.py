@@ -18,21 +18,29 @@ import sqlite3
 
 import os
 # importing necessary functions from dotenv library
-from dotenv import load_dotenv, dotenv_values 
+from dotenv import load_dotenv, dotenv_values
 import logging
 # loading variables from .env file
 load_dotenv()
 
 app = FastAPI()
 
-GOOGLE_API_KEY=os.getenv("GOOGLE_API_KEY")
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 genai.configure(api_key=GOOGLE_API_KEY)
 
 db = sqlite3.connect('database.sqlite')
 
 c = db.cursor()
 
-c.execute('''CREATE TABLE if not exists products ( product_id TEXT PRIMARY KEY, item_name TEXT, product_type TEXT, description TEXT, brand_name TEXT, country TEXT, your_price REAL, quantity INTEGER, mrp REAL, fulfillment TEXT, manufacturer TEXT, contact_no TEXT)''')
+c.execute('''CREATE TABLE if not exists products 
+          ( product_id TEXT PRIMARY KEY,
+          item_name TEXT, product_type TEXT,
+          description TEXT, brand_name TEXT,
+          country TEXT, your_price REAL,
+          quantity INTEGER, mrp REAL,
+          fulfillment TEXT,
+          manufacturer TEXT,
+          contact_no TEXT)''')
 
 db.commit()
 
@@ -47,20 +55,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-class Product(BaseModel):
-    brand_name: str
-    product_id: str
-    country: str
-    your_price: float
-    quantity: int
-    mrp: float
-    fulfillment: str
-    manufacturer: str
-    contact_no: str
 
 def to_markdown(text):
-  text = text.replace('•', '  *')
-  return Markdown(textwrap.indent(text, '> ', predicate=lambda _: True))
+    text = text.replace('•', '  *')
+    return Markdown(textwrap.indent(text, '> ', predicate=lambda _: True))
+
 
 def convert_gemini_output_to_json(gemini_output):
     # Find the start and end of the JSON part of the string
@@ -73,6 +72,7 @@ def convert_gemini_output_to_json(gemini_output):
     # Parse the JSON string into a Python dictionary
     return json.loads(json_string)
 
+
 def remove_background_task(image_file):
     input = image_file.read()
     output = remove(input)
@@ -80,13 +80,15 @@ def remove_background_task(image_file):
     with Image.open(io.BytesIO(output)) as img:
         img = img.convert("RGBA")
         data = img.getdata()
-        new_data = [(255, 255, 255, 255) if item[3] == 0 else item for item in data]
+        new_data = [(255, 255, 255, 255) if item[3]
+                    == 0 else item for item in data]
         img.putdata(new_data)
 
         img_byte_array = io.BytesIO()
         img.save(img_byte_array, format="PNG")
         img_byte_array.seek(0)
         return img_byte_array.getvalue()  # Return processed image data
+
 
 @app.post("/remove_background")
 async def remove_background(image: UploadFile = File(...)):
@@ -100,7 +102,8 @@ async def generate_blog_post(image: UploadFile = File(...)):
 
     model = genai.GenerativeModel('gemini-pro-vision')
 
-    response = model.generate_content(["""Provide an amazon listing and provide the response in the follwing json format {"Item Name":"","Product type":"","Description":"" }""", img], stream=True)
+    response = model.generate_content(
+        ["""Provide an amazon listing and provide the response in the follwing json format {"Item Name":"","Product type":"","Description":"" }""", img], stream=True)
     response.resolve()
     return convert_gemini_output_to_json(response.text)
 
