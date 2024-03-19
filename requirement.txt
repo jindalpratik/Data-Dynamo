@@ -2,5 +2,6 @@ google.generativeai
 IPython.display
 fastapi
 rembg
-dotenv
 uvicorn
+python-multipart
+python-dotenv
