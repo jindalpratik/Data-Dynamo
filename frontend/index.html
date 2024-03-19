@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Product Details</title>
+        <!-- Cropper.js library -->
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css"
+        />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+        <style>
+            .container {
+                margin: 0 auto;
+                padding: 20px;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            }
+
+            h2 {
+                text-align: center;
+                margin-bottom: 20px;
+            }
+
+            .option {
+                margin-bottom: 10px;
+            }
+
+            .option button {
+                padding: 10px 20px;
+                border: none;
+                background-color: #007bff;
+                color: #fff;
+                border-radius: 5px;
+                cursor: pointer;
+                transition: background-color 0.3s ease;
+            }
+
+            .option button:hover {
+                background-color: #0056b3;
+            }
+
+            .input-field {
+                margin-bottom: 10px;
+            }
+
+            .input-field input[type="text"],
+            .input-field input[type="file"] {
+                width: calc(100% - 20px);
+                padding: 10px;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+            }
+
+            .input-field input[type="file"] {
+                border: none;
+                background-color: transparent;
+            }
+
+            .input-field button {
+                padding: 8px 15px;
+                border: none;
+                background-color: #28a745;
+                color: #fff;
+                border-radius: 5px;
+                cursor: pointer;
+                transition: background-color 0.3s ease;
+            }
+
+            .input-field button:hover {
+                background-color: #218838;
+            }
+
+            .product-preview {
+                text-align: center;
+                margin-top: 20px;
+            }
+
+            .product-preview img {
+                max-width: 100%;
+                height: auto;
+                border-radius: 5px;
+                margin-bottom: 10px;
+            }
+
+            .cropped-images {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .cropped-images .cropped-image {
+                position: relative;
+                margin: 5px;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+                overflow: hidden;
+            }
+
+            .background-remove-button {
+                padding: 10px 20px;
+                border: none;
+                background-color: #dc3545;
+                color: #fff;
+                border-radius: 5px;
+                cursor: pointer;
+                transition: background-color 0.3s ease;
+            }
+
+            .background-remove-button:hover {
+                background-color: #c82333;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h2>Product Details</h2>
+            <div class="option">
+                <button class="background-remove-button">Remove Background</button>
+            </div>
+            <div class="input-field">
+                <input type="text" placeholder="Product Name" />
+            </div>
+            <div class="input-field">
+                <input type="file" accept="image/*" />
+                <button>Upload Image</button>
+            </div>
+            <div class="product-preview">
+                <img src="" alt="Product Preview" />
+            </div>
+            <div class="cropped-images">
+                <!-- Cropped images will be displayed here -->
+            </div>
+        </div>
+
+        <script>
+            // Add your main app functionality here
+        </script>
+    </body>
+</html>
+                max-width: 600px;
+                margin: 0 auto;
+                padding: 20px;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            }
+
+            h2 {
+                text-align: center;
+                margin-bottom: 20px;
+            }
+
+            .option {
+                margin-bottom: 10px;
+            }
+
+            .option button {
+                padding: 10px 20px;
+                border: none;
+                background-color: #007bff;
+                color: #fff;
+                border-radius: 5px;
+                cursor: pointer;
+                transition: background-color 0.3s ease;
+            }
+
+            .option button:hover {
+                background-color: #0056b3;
+            }
+
+            .input-field {
+                margin-bottom: 10px;
+            }
+
+            .input-field input[type="text"],
+            .input-field input[type="file"] {
+                width: calc(100% - 20px);
+                padding: 10px;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+            }
+
+            .input-field input[type="file"] {
+                border: none;
+                background-color: transparent;
+            }
+
+            .input-field button {
+                padding: 8px 15px;
+                border: none;
+                background-color: #28a745;
+                color: #fff;
+                border-radius: 5px;
+                cursor: pointer;
+                transition: background-color 0.3s ease;
+            }
+
+            .input-field button:hover {
+                background-color: #218838;
+            }
+
+            .product-preview {
+                text-align: center;
+                margin-top: 20px;
+            }
+
+            .product-preview img {
+                max-width: 100%;
+                height: auto;
+                border-radius: 5px;
+                margin-bottom: 10px;
+            }
+
+            .cropped-images {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .cropped-images .cropped-image {
+                position: relative;
+                margin: 5px;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+                overflow: hidden;
+                max-width: 100px;
+                opacity: 0;
+                animation: fadeIn 0.5s forwards;
+            }
+
+            .cropped-images .cropped-image img {
+                max-width: 100%;
+                height: auto;
+            }
+
+            .enhanced-button {
+                position: absolute;
+                top: 5px;
+                right: 5px;
+                background-color: red;
+                color: white;
+                border: none;
+                border-radius: 50%;
+                padding: 5px;
+                cursor: pointer;
+                z-index: 1;
+            }
+
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                }
+                to {
+                    opacity: 1;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h2>Product Details</h2>
+            <div class="option">
+                <button onclick="openCamera()">Open Camera</button>
+            </div>
+            <div class="option">
+                <label for="productImage">Upload Product Image:</label>
+                <div class="input-field">
+                    <input
+                        type="file"
+                        id="productImage"
+                        accept="image/*"
+                        onchange="previewImage(event)"
+                    />
+                    <button
+                        onclick="document.getElementById('productImage').click()"
+                    >
+                        Choose File
+                    </button>
+                </div>
+            </div>
+            <div class="input-field">
+                <label for="productName">Product Name:</label>
+                <input type="text" id="productName" />
+            </div>
+            <div class="input-field">
+                <label for="productCatalog">Product Catalog:</label>
+                <input type="text" id="productCatalog" />
+            </div>
+            <div class="product-preview" id="productPreview">
+                <!-- Product image will be shown here -->
+            </div>
+            <div class="cropped-images" id="croppedImages">
+                <!-- Cropped images will be displayed here -->
+            </div>
+        </div>
+
+        <script>
+            let cropper;
+
+            function openCamera() {
+                if (
+                    "mediaDevices" in navigator &&
+                    "getUserMedia" in navigator.mediaDevices
+                ) {
+                    navigator.mediaDevices
+                        .getUserMedia({ video: true })
+                        .then(function (stream) {
+                            const video = document.createElement("video");
+                            video.srcObject = stream;
+                            video.play();
+                            const preview =
+                                document.getElementById("productPreview");
+                            preview.innerHTML = "";
+                            preview.appendChild(video);
+
+                            const canvas = document.createElement("canvas");
+                            const context = canvas.getContext("2d");
+                            video.addEventListener(
+                                "loadedmetadata",
+                                function () {
+                                    canvas.width = video.videoWidth;
+                                    canvas.height = video.videoHeight;
+                                }
+                            );
+                            video.addEventListener("play", function () {
+                                const timerCallback = function () {
+                                    if (video.paused || video.ended) {
+                                        return;
+                                    }
+                                    context.drawImage(
+                                        video,
+                                        0,
+                                        0,
+                                        canvas.width,
+                                        canvas.height
+                                    );
+                                    setTimeout(timerCallback, 0);
+                                };
+                                timerCallback();
+                            });
+                            const captureButton =
+                                document.createElement("button");
+                            captureButton.textContent = "Capture Photo";
+                            captureButton.addEventListener(
+                                "click",
+                                function () {
+                                    const imageData =
+                                        canvas.toDataURL("image/png");
+                                    const img = document.createElement("img");
+                                    img.src = imageData;
+                                    preview.innerHTML = "";
+                                    preview.appendChild(img);
+                                    cropper = new Cropper(img, {
+                                        aspectRatio: 1 / 1, // Set your desired aspect ratio
+                                        crop: function (event) {
+                                            // You can handle cropping events here if needed
+                                        },
+                                    });
+
+                                    const retakeButton =
+                                        document.createElement("button");
+                                    retakeButton.textContent = "Retake";
+                                    retakeButton.addEventListener(
+                                        "click",
+                                        function () {
+                                            preview.innerHTML = "";
+                                            preview.appendChild(video);
+                                            cropper = null;
+                                        }
+                                    );
+                                    preview.appendChild(retakeButton);
+
+                                    const saveButton =
+                                        document.createElement("button");
+                                    saveButton.textContent = "Save";
+                                    saveButton.addEventListener(
+                                        "click",
+                                        function () {
+                                            addCroppedImage();
+                                            preview.innerHTML = "";
+                                            cropper = null;
+                                        }
+                                    );
+                                    preview.appendChild(saveButton);
+                                }
+                            );
+                            preview.appendChild(captureButton);
+                        })
+                        .catch(function (error) {
+                            console.error("Error accessing the camera:", error);
+                            alert(
+                                "Error accessing the camera. Please make sure your device supports it and any necessary permissions are granted."
+                            );
+                        });
+                } else {
+                    alert("Camera access not supported in this browser.");
+                }
+            }
+
+            function previewImage(event) {
+                const preview = document.getElementById("productPreview");
+                const file = event.target.files[0];
+                const reader = new FileReader();
+
+                reader.onload = function () {
+                    const img = document.createElement("img");
+                    img.src = reader.result;
+                    img.alt = "Product Image";
+                    img.classList.add("fadeIn");
+                    preview.innerHTML = "";
+                    preview.appendChild(img);
+                    cropper = new Cropper(img, {
+                        aspectRatio: 1 / 1, // Set your desired aspect ratio
+                        crop: function (event) {
+                            // You can handle cropping events here if needed
+                        },
+                    });
+                };
+
+                if (file) {
+                    reader.readAsDataURL(file);
+                }
+            }
+
+            function addCroppedImage() {
+                if (cropper) {
+                    cropper.getCroppedCanvas().toBlob(function (blob) {
+                        const newCroppedImage = document.createElement("div");
+                        newCroppedImage.classList.add("cropped-image");
+                        const newImg = document.createElement("img");
+                        newImg.src = URL.createObjectURL(blob);
+                        newCroppedImage.appendChild(newImg);
+                        const deleteButton = document.createElement("button");
+                        deleteButton.textContent = "X";
+                        deleteButton.classList.add("enhanced-button");
+                        deleteButton.onclick = function () {
+                            newCroppedImage.remove();
+                        };
+                        newCroppedImage.appendChild(deleteButton);
+                        document
+                            .getElementById("croppedImages")
+                            .appendChild(newCroppedImage);
+                    });
+                }
+            }
+        </script>
+    </body>
+</html>
