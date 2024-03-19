@@ -51,15 +51,15 @@ document
                 // Clear the form container
                 formContainer.innerHTML = "";
                 data2 = ({
-                    "Brand Name": "",
-                    "Product Id": "",
+                    "Brand Name": "XYZ",
+                    "Product Id": "5495152119519",
                     "Country": "India",
-                    "Your Price": "",
-                    "Quantity": "",
-                    "M.R.P": "",
-                    "FullFillment": "",
-                    "Manufacturer": "",
-                    "Contact No.": "",
+                    "Your Price": "250",
+                    "Quantity": "10",
+                    "M.R.P": "500",
+                    "FullFillment": "Amazon Fullfilled",
+                    "Manufacturer": "XYZ Pvt Ltd",
+                    "Contact No.": "65415465",
                 });
 
                 data = {...data, ...data2}
@@ -87,11 +87,33 @@ document
 
                 const submitButton = document.createElement("input");
                 submitButton.type = "submit";
-                submitButton.value = "Update";
+                submitButton.value = "Download CSV";
 
                 form.appendChild(submitButton);
 
                 formContainer.appendChild(form);
+
+                
+                form.addEventListener('submit', function(event) {
+                    event.preventDefault();
+
+                    // Convert the form data to CSV
+                    const formData = new FormData(form);
+                    const csv = Array.from(formData.entries())
+                        .map(entry => entry.map(value => `"${value}"`).join(','))
+                        .join('\n');
+
+                    // Download the CSV file
+                    const blob = new Blob([csv], { type: 'text/csv' });
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = 'form-data.csv';
+                    link.click();
+
+                    // Clean up
+                    URL.revokeObjectURL(url);
+                });
 
                 // Scroll to the form
                 form.scrollIntoView({ behavior: "smooth" });
