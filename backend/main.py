@@ -8,11 +8,13 @@ from IPython.display import Markdown
 from fastapi import FastAPI, UploadFile, File, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
+from pydantic import BaseModel
 from rembg import remove
 from PIL import Image
 import io
 import uvicorn
 import json
+import sqlite3
 
 import os
 # importing necessary functions from dotenv library
@@ -26,6 +28,16 @@ app = FastAPI()
 GOOGLE_API_KEY=os.getenv("GOOGLE_API_KEY")
 genai.configure(api_key=GOOGLE_API_KEY)
 
+db = sqlite3.connect('database.sqlite')
+
+c = db.cursor()
+
+c.execute('''CREATE TABLE if not exists products ( product_id TEXT PRIMARY KEY, item_name TEXT, product_type TEXT, description TEXT, brand_name TEXT, country TEXT, your_price REAL, quantity INTEGER, mrp REAL, fulfillment TEXT, manufacturer TEXT, contact_no TEXT)''')
+
+db.commit()
+
+db.close()
+
 # Allow all origins (for development purposes)
 app.add_middleware(
     CORSMiddleware,
@@ -34,6 +46,17 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+class Product(BaseModel):
+    brand_name: str
+    product_id: str
+    country: str
+    your_price: float
+    quantity: int
+    mrp: float
+    fulfillment: str
+    manufacturer: str
+    contact_no: str
 
 def to_markdown(text):
   text = text.replace('•', '  *')
