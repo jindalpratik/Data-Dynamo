@@ -4,59 +4,18 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Product Details</title>
-        <!-- Cropper.js library -->
-        <link
-            rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css"
-        />
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
-        <link rel="stylesheet" href="./style.css" />
+        <link rel="stylesheet" href="style.css">
     </head>
     <body>
         <div class="container">
-            <h2>Product Details</h2>
-            <div class="option">
-                <button onclick="openCamera()">Open Camera</button>
-            </div>
-            <div class="option">
-                <label for="productImage">Upload Product Image:</label>
-                <div class="input-field">
-                    <input
-                        type="file"
-                        id="productImage"
-                        accept="image/*"
-                        onchange="previewImage(event)"
-                    />
-                    <button
-                        onclick="document.getElementById('productImage').click()"
-                    >
-                        Choose File
-                    </button>
-                </div>
-            </div>
-            <div class="input-field">
-                <label for="productName">Product Name:</label>
-                <input type="text" id="productName" />
-            </div>
-            <div class="input-field">
-                <label for="productCatalog">Product Catalog:</label>
-                <input type="text" id="productCatalog" />
-            </div>
-            <div class="product-preview" id="productPreview">
-                <!-- Product image will be shown here -->
-            </div>
-            <div class="cropped-images" id="croppedImages">
-                <!-- Cropped images will be displayed here -->
-            </div>
-            <h2>Background Removal</h2>
+            <h2>Generate Blog Post</h2>
             <form id="upload-form">
-                <input type="file" id="image-upload" accept="image/*">
-                <button type="submit">Remove Background</button>
+                <input type="file" id="image-upload" accept="image/*" capture>
+                <button type="submit">Generate Blog Post</button>
             </form>
-            <div id="loader"></div> <!-- Add this loader element -->
-            <img id="result-image" src="" alt="Processed image will appear here">
+            <img id="processed-image" src="" alt="Processed image will appear here">
+            <div id="blog-post"></div>
         </div>
-
-        <script src="./script.js"></script>
+        <script src="script.js"></script>
     </body>
 </html>
