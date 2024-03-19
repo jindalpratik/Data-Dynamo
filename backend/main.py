@@ -24,7 +24,7 @@ def remove_background_task(image_file):
     with Image.open(io.BytesIO(output)) as img:
         img = img.convert("RGBA")
         data = img.getdata()
-        new_data = [(0, 0, 0, 255) if item[3] == 0 else item for item in data]
+        new_data = [(255, 255, 255, 255) if item[3] == 0 else item for item in data]
         img.putdata(new_data)
 
         img_byte_array = io.BytesIO()

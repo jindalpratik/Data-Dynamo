@@ -97,135 +97,6 @@
                 border: 1px solid #ccc;
                 border-radius: 5px;
                 overflow: hidden;
-            }
-
-            .background-remove-button {
-                padding: 10px 20px;
-                border: none;
-                background-color: #dc3545;
-                color: #fff;
-                border-radius: 5px;
-                cursor: pointer;
-                transition: background-color 0.3s ease;
-            }
-
-            .background-remove-button:hover {
-                background-color: #c82333;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <h2>Product Details</h2>
-            <div class="option">
-                <button class="background-remove-button">Remove Background</button>
-            </div>
-            <div class="input-field">
-                <input type="text" placeholder="Product Name" />
-            </div>
-            <div class="input-field">
-                <input type="file" accept="image/*" />
-                <button>Upload Image</button>
-            </div>
-            <div class="product-preview">
-                <img src="" alt="Product Preview" />
-            </div>
-            <div class="cropped-images">
-                <!-- Cropped images will be displayed here -->
-            </div>
-        </div>
-
-        <script>
-            // Add your main app functionality here
-        </script>
-    </body>
-</html>
-                max-width: 600px;
-                margin: 0 auto;
-                padding: 20px;
-                border: 1px solid #ccc;
-                border-radius: 5px;
-                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            }
-
-            h2 {
-                text-align: center;
-                margin-bottom: 20px;
-            }
-
-            .option {
-                margin-bottom: 10px;
-            }
-
-            .option button {
-                padding: 10px 20px;
-                border: none;
-                background-color: #007bff;
-                color: #fff;
-                border-radius: 5px;
-                cursor: pointer;
-                transition: background-color 0.3s ease;
-            }
-
-            .option button:hover {
-                background-color: #0056b3;
-            }
-
-            .input-field {
-                margin-bottom: 10px;
-            }
-
-            .input-field input[type="text"],
-            .input-field input[type="file"] {
-                width: calc(100% - 20px);
-                padding: 10px;
-                border: 1px solid #ccc;
-                border-radius: 5px;
-            }
-
-            .input-field input[type="file"] {
-                border: none;
-                background-color: transparent;
-            }
-
-            .input-field button {
-                padding: 8px 15px;
-                border: none;
-                background-color: #28a745;
-                color: #fff;
-                border-radius: 5px;
-                cursor: pointer;
-                transition: background-color 0.3s ease;
-            }
-
-            .input-field button:hover {
-                background-color: #218838;
-            }
-
-            .product-preview {
-                text-align: center;
-                margin-top: 20px;
-            }
-
-            .product-preview img {
-                max-width: 100%;
-                height: auto;
-                border-radius: 5px;
-                margin-bottom: 10px;
-            }
-
-            .cropped-images {
-                display: flex;
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-
-            .cropped-images .cropped-image {
-                position: relative;
-                margin: 5px;
-                border: 1px solid #ccc;
-                border-radius: 5px;
-                overflow: hidden;
                 max-width: 100px;
                 opacity: 0;
                 animation: fadeIn 0.5s forwards;
@@ -256,6 +127,21 @@
                 to {
                     opacity: 1;
                 }
+            }
+
+            #loader {
+                border: 16px solid #f3f3f3;
+                border-radius: 50%;
+                border-top: 16px solid #3498db;
+                width: 120px;
+                height: 120px;
+                animation: spin 2s linear infinite;
+                display: none; /* Hidden by default */
+            }
+
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
             }
         </style>
     </head>
@@ -295,6 +181,13 @@
             <div class="cropped-images" id="croppedImages">
                 <!-- Cropped images will be displayed here -->
             </div>
+            <h2>Background Removal</h2>
+            <form id="upload-form">
+                <input type="file" id="image-upload" accept="image/*">
+                <button type="submit">Remove Background</button>
+            </form>
+            <div id="loader"></div> <!-- Add this loader element -->
+            <img id="result-image" src="" alt="Processed image will appear here">
         </div>
 
         <script>
@@ -446,6 +339,44 @@
                     });
                 }
             }
+
+            document.getElementById('image-upload').addEventListener('change', function(event) {
+                var file = event.target.files[0];
+                var imageElement = document.getElementById('result-image');
+                var url = URL.createObjectURL(file);
+                imageElement.src = url;
+            });
+
+            document.getElementById('upload-form').addEventListener('submit', function(event) {
+                event.preventDefault();
+                var fileInput = document.getElementById('image-upload');
+                var file = fileInput.files[0];
+                var formData = new FormData();
+                formData.append('image', file);
+
+                // Show the loader
+                document.getElementById('loader').style.display = 'block';
+
+                fetch('http://localhost:9080/remove_background', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.blob())
+                .then(image => {
+                    var imageElement = document.getElementById('result-image');
+                    var url = URL.createObjectURL(image);
+                    imageElement.src = url;
+
+                    // Hide the loader
+                    document.getElementById('loader').style.display = 'none';
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+
+                    // Hide the loader
+                    document.getElementById('loader').style.display = 'none';
+                });
+            });
         </script>
     </body>
 </html>
