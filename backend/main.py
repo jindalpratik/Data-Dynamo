@@ -187,13 +187,15 @@ async def search_product(query: str):
     c = conn.cursor()
 
     c.execute('''
-        SELECT * FROM products WHERE product_id = ? OR item_name = ?
-    ''', (query, query))
+    SELECT * FROM products WHERE product_id LIKE ? OR item_name LIKE ?
+''', ('%' + query + '%', '%' + query + '%'))
 
     product = c.fetchone()
 
     conn.close()
-
+    
+    if product is None:
+        raise HTTPException(status_code=404, detail="Product not found")
     # Map the product details to the desired format
     product_details = {
         "Product Id": product[0],

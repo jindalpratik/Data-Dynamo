@@ -212,3 +212,16 @@ button:hover {
 #search-form button:hover {
     background-color: #455A64; /* Blue Grey 700 */
 }
+
+#product-select {
+    width: 100%;
+    height: 35px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    padding: 5px;
+    font-size: 16px;
+}
+
+#product-details {
+    margin-bottom: 20px;
+}

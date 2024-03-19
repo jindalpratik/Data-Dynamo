@@ -1,64 +1,227 @@
-const imageUpload = document.getElementById("image-upload");
-const imagePreview = document.getElementById("image-preview");
-const loader = document.getElementById("loader");
+// Function to create the form dynamically
+function createForm(data) {
+    const formContainer = document.getElementById("form-container");
+    formContainer.innerHTML = "";
 
+    const form = document.createElement("form");
+    form.id = "json-data-form";
 
+    const dict = {
+        "Product Id": "product_id",
+        "Item Name": "item_name",
+        "Product type": "product_type",
+        Description: "description",
+        "Brand Name": "brand_name",
+        Country: "country",
+        "Your Price": "your_price",
+        Quantity: "quantity",
+        "M.R.P": "mrp",
+        FullFillment: "fulfillment",
+        Manufacturer: "manufacturer",
+        "Contact No.": "contact_no",
+    };
 
-imageUpload.addEventListener("change", function () {
-    const file = this.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function (event) {
-            imagePreview.src = event.target.result;
-        };
-        reader.readAsDataURL(file);
+    for (const key in data) {
+        const label = document.createElement("label");
+        label.for = key;
+        label.textContent = key + ":";
+        form.appendChild(label);
+
+        if (
+            [
+                "Product Id",
+                "Item Name",
+                "Product type",
+                "Description",
+                "Brand Name",
+                "Country",
+                "FullFillment",
+                "Manufacturer",
+                "Contact No.",
+            ].includes(key)
+        ) {
+            const textarea = document.createElement("textarea");
+            textarea.id = key;
+            textarea.name = key;
+            textarea.value = data[key];
+            textarea.style.height = "auto";
+            textarea.style.height = textarea.scrollHeight + "px";
+            form.appendChild(textarea);
+        } else {
+            const numInput = document.createElement("input");
+            numInput.id = key;
+            numInput.name = key;
+            numInput.type = "number";
+            numInput.value = parseInt(data[key]);
+            form.appendChild(numInput);
+        }
     }
-});
 
-document.getElementById('search-form').addEventListener('submit', function (event) {
-    event.preventDefault();
+    const submitButton = document.createElement("input");
+    submitButton.type = "submit";
+    submitButton.value = "Download CSV";
+    form.appendChild(submitButton);
+    formContainer.appendChild(form);
 
-    const query = document.getElementById('search-query').value;
+    form.addEventListener("submit", function (event) {
+        event.preventDefault();
 
-    fetch(`http://localhost:9080/search_product/${query}`)
-        .then(response => {
-            console.log(response);
-            // Also log the http exception detail
-            if (!response.ok) {
-                throw new Error('Product not found', response.text);
-            }
-            return response.json();
+        // Convert the form data to CSV
+        const formData = new FormData(form);
+        const csv = Array.from(formData.entries())
+            .map((entry) => entry.map((value) => `"${value}"`).join(","))
+            .join("\n");
+
+        // Download the CSV file
+        const blob = new Blob([csv], { type: "text/csv" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "form-data.csv";
+        link.click();
+
+        // Clean up
+        URL.revokeObjectURL(url);
+
+        // Convert the form data to a JSON object
+        const data = Array.from(formData.entries()).reduce(
+            (obj, [key, value]) => {
+                obj[dict[key]] = value;
+                return obj;
+            },
+            {}
+        );
+
+        // Send the data to your API
+        fetch("http://localhost:9080/add_product", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
         })
-        .then(data => {
-            // Create a select element
-            const select = document.createElement('select');
-            select.id = 'product-select';
-        
-            // Create an option for the product details
-            const productOption = document.createElement('option');
-            name = data.product['Item Name'];
-            productOption.value = JSON.stringify(data.product);
-            productOption.textContent = `Product: ${name}`;
-            select.appendChild(productOption);
-        
-            // Create an option for adding a new listing
-            const newListingOption = document.createElement('option');
-            newListingOption.value = 'new';
-            newListingOption.textContent = 'Add new listing';
-            select.appendChild(newListingOption);
-        
-            // Append the select element to the product details div
-            const productDetails = document.getElementById('product-details');
-            productDetails.appendChild(select);
+            .then((response) => response.json())
+            .then((data) => {
+                console.log(data);
+            });
+    });
 
-            
-        })
-        .catch(error => {
-            // If the product is not found, go through the current workflow
-            console.log(error.message);
-            // Your current workflow code here
-        });
-});
+    form.scrollIntoView({ behavior: "smooth" });
+}
+
+let debounceTimeout;
+
+document
+    .getElementById("search-form")
+    .addEventListener("input", function (event) {
+        clearTimeout(debounceTimeout);
+        debounceTimeout = setTimeout(() => {
+            event.preventDefault();
+
+            const query = document.getElementById("search-query").value;
+
+            fetch(`http://localhost:9080/search_product/${query}`)
+                .then((response) => {
+                    console.log(response);
+                    // Also log the http exception detail
+                    if (!response.ok) {
+                        throw new Error("Product not found", response.text);
+                    }
+                    return response.json();
+                })
+                .then((data) => {
+                    // Create a select element
+                    // Check if a select element already exists
+                    const oldSelect = document.getElementById("product-select");
+                    if (oldSelect) {
+                        // If it does, remove it
+                        oldSelect.remove();
+                    }
+
+                    const oldButton =
+                        document.getElementById("add-listing-button");
+                    if (oldButton) {
+                        oldButton.remove();
+                    }
+
+                    const select = document.createElement("select");
+                    select.id = "product-select";
+
+                    const defaultOption = document.createElement("option");
+                    defaultOption.value = "";
+                    defaultOption.textContent = "Select one option";
+                    select.appendChild(defaultOption);
+
+                    // Create an option for the product details
+                    const productOption = document.createElement("option");
+                    name = data.product["Item Name"];
+                    productOption.value = JSON.stringify(data.product);
+                    productOption.textContent = `Product: ${name}`;
+                    select.appendChild(productOption);
+
+                    // Create an option for adding a new listing
+                    const newListingOption = document.createElement("option");
+                    newListingOption.value = "new";
+                    newListingOption.textContent = "Add new listing";
+                    select.appendChild(newListingOption);
+
+                    // Append the select element to the product details div
+                    const productDetails =
+                        document.getElementById("product-details");
+                    productDetails.appendChild(select);
+
+                    select.addEventListener("change", function () {
+                        if (this.value !== "new") {
+                            const selectedProduct = JSON.parse(this.value);
+                            createForm(selectedProduct);
+                            document.getElementById(
+                                "generate-listing-section"
+                            ).style.display = "none";
+                        } else {
+                            // Clear the form container
+                            const formContainer =
+                                document.getElementById("form-container");
+                            formContainer.innerHTML = "";
+                            document.getElementById(
+                                "generate-listing-section"
+                            ).style.display = "block";
+                        }
+                    });
+                })
+                .catch((error) => {
+                    // If the product is not found, go through the current workflow
+                    const oldSelect = document.getElementById("product-select");
+                    if (oldSelect) {
+                        // If it does, remove it
+                        oldSelect.remove();
+                    }
+
+                    const oldButton =
+                        document.getElementById("add-listing-button");
+                    if (oldButton) {
+                        oldButton.remove();
+                    }
+
+                    const button = document.createElement("button");
+                    button.id = "add-listing-button";
+                    button.textContent = "Add new listing";
+
+                    const productDetails =
+                        document.getElementById("product-details");
+                    productDetails.appendChild(button);
+
+                    button.addEventListener("click", function () {
+                        // Clear the form container
+                        const formContainer =
+                            document.getElementById("form-container");
+                        formContainer.innerHTML = "";
+                        document.getElementById(
+                            "generate-listing-section"
+                        ).style.display = "block";
+                    });
+                });
+        },500);
+    });
 
 document
     .getElementById("upload-form")
@@ -100,14 +263,6 @@ document
 
             const data = await generateBlogPostResponse.json();
 
-            loader.style.display = "none";
-
-            const formContainer = document.getElementById("form-container");
-            formContainer.innerHTML = "";
-
-            const form = document.createElement("form");
-            form.id = "json-data-form";
-
             const data2 = {
                 "Brand Name": "XYZ",
                 "Product Id": "5495152119519",
@@ -120,115 +275,27 @@ document
                 "Contact No.": "65415465",
             };
 
-            const dict = {
-                "Product Id": "product_id",
-                "Item Name": "item_name",
-                "Product type": "product_type",
-                Description: "description",
-                "Brand Name": "brand_name",
-                Country: "country",
-                "Your Price": "your_price",
-                Quantity: "quantity",
-                "M.R.P": "mrp",
-                FullFillment: "fulfillment",
-                Manufacturer: "manufacturer",
-                "Contact No.": "contact_no",
-            };
-
             Object.assign(data, data2);
 
-            for (const key in data) {
-                const label = document.createElement("label");
-                label.for = key;
-                label.textContent = key + ":";
-                form.appendChild(label);
+            loader.style.display = "none";
 
-                if (
-                    [
-                        "Product Id",
-                        "Item Name",
-                        "Product type",
-                        "Description",
-                        "Brand Name",
-                        "Country",
-                        "FullFillment",
-                        "Manufacturer",
-                        "Contact No.",
-                    ].includes(key)
-                ) {
-                    const textarea = document.createElement("textarea");
-                    textarea.id = key;
-                    textarea.name = key;
-                    textarea.value = data[key];
-                    textarea.style.height = "auto";
-                    textarea.style.height = textarea.scrollHeight + "px";
-                    form.appendChild(textarea);
-                } else {
-                    const numInput = document.createElement("input");
-                    numInput.id = key;
-                    numInput.name = key;
-                    numInput.type = "number";
-                    numInput.value = parseInt(data[key]);
-                    form.appendChild(numInput);
-                }
-            }
+            const formContainer = document.getElementById("form-container");
 
-            const submitButton = document.createElement("input");
-            submitButton.type = "submit";
-            submitButton.value = "Download CSV";
-            form.appendChild(submitButton);
-            formContainer.appendChild(form);
-
-            form.addEventListener("submit", function (event) {
-                event.preventDefault();
-
-                // Convert the form data to CSV
-                const formData = new FormData(form);
-                const csv = Array.from(formData.entries())
-                    .map((entry) =>
-                        entry.map((value) => `"${value}"`).join(",")
-                    )
-                    .join("\n");
-
-                // Download the CSV file
-                const blob = new Blob([csv], { type: "text/csv" });
-                const url = URL.createObjectURL(blob);
-                const link = document.createElement("a");
-                link.href = url;
-                link.download = "form-data.csv";
-                link.click();
-
-                // Clean up
-                URL.revokeObjectURL(url);
-
-                // Convert the form data to a JSON object
-                const data = Array.from(formData.entries()).reduce(
-                    (obj, [key, value]) => {
-                        obj[dict[key]] = value;
-                        return obj;
-                    },
-                    {}
-                );
-
-                // Send the data to your API
-                fetch("http://localhost:9080/add_product", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(data),
-                })
-                    .then((response) => response.json())
-                    .then((data) => {
-                        console.log(data);
-                    });
-            });
-
-            form.scrollIntoView({ behavior: "smooth" });
+            // Create the form with the generated data
+            createForm(data);
         } catch (error) {
             console.error("Error:", error);
             loader.style.display = "none";
         }
+    });
+
+document
+    .getElementById("image-upload")
+    .addEventListener("change", function (event) {
+        const imagePreview = document.getElementById("image-preview");
+        const file = event.target.files[0];
+        const imageUrl = URL.createObjectURL(file);
+        imagePreview.src = imageUrl;
     });
 
 window.onload = function () {
