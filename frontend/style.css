@@ -163,6 +163,15 @@ button:hover {
     padding: 10px;
     border: 1px solid #BDBDBD; /* Grey 400 */
     border-radius: 4px;
+    line-height: 1.5; /* Increase line-height for better readability */
+    font-size: 16px; /* Increase font size */
+    background-color: #F5F5F5; /* Light Grey 100 for a subtle background color */
+    transition: border-color 0.3s ease; /* Smooth transition for border color */
+}
+
+#json-data-form textarea:focus {
+    border-color: #E64A19; /* Deep Orange 700 for focus border color */
+    outline: none; /* Remove default outline */
 }
 
 /* Loader Styles */
