@@ -181,7 +181,7 @@ async def add_product(product: Product):
 
     return {"message": "Product added successfully"}
 
-@app.get("/search_product/{query}")
+@app.get("/search_products/{query}")
 async def search_product(query: str):
     conn = sqlite3.connect('database.sqlite')
     c = conn.cursor()
@@ -218,3 +218,40 @@ async def search_product(query: str):
     ]
 
     return {"products": product_details}
+
+@app.get("/search_product/{query}")
+async def search_product(query: str):
+    conn = sqlite3.connect('database.sqlite')
+    c = conn.cursor()
+
+    c.execute('''
+    SELECT * FROM products WHERE product_id = ?
+    ''', (query))
+
+# Fetch all products that match the search query
+    product = c.fetchone() 
+
+    conn.close()
+
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+
+    # Map the product details to the desired format
+    product_details = [
+        {
+            "Product Id": product[0],
+            "Item Name": product[1],
+            "Product type": product[2],
+            "Description": product[3],
+            "Brand Name": product[4],
+            "Country": product[5],
+            "Your Price": product[6],
+            "Quantity": product[7],
+            "M.R.P": product[8],
+            "FullFillment": product[9],
+            "Manufacturer": product[10],
+            "Contact No.": product[11]
+        }
+    ]
+
+    return {"product": product_details}

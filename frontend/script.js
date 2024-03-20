@@ -47,6 +47,9 @@ function createForm(data) {
             textarea.style.height = "auto";
             textarea.style.height = textarea.scrollHeight + "px";
             form.appendChild(textarea);
+            if (key === "Product Id") {
+                saved_textarea = textarea;
+            }
         } else {
             const numInput = document.createElement("input");
             numInput.id = key;
@@ -60,7 +63,145 @@ function createForm(data) {
     const submitButton = document.createElement("input");
     submitButton.type = "submit";
     submitButton.value = "Download CSV";
+
+    
+    saved_textarea.addEventListener("input", function (event) {
+        query = document.getElementById("Product Id").value;
+        fetch(`http://localhost:9080/search_products/${query}`)
+            .then((response) => {
+                console.log(response);
+                // Also log the http exception detail
+                if (!response.ok) {
+                    throw new Error("Product not found", response.text);
+                }
+                return response.json();
+            })
+            .then((data) => {
+                //Find old update and add buttons and remove them
+                const oldUpdateButton = document.getElementById("update-button");
+                if (oldUpdateButton) {
+                    oldUpdateButton.remove();
+                }
+
+                const oldAddButton = document.getElementById("add-button");
+                if (oldAddButton) {
+                    oldAddButton.remove();
+                }
+
+                const updateButton = document.createElement("button");
+                updateButton.textContent = "Update Product";
+                updateButton.id = "update-button";
+                form.appendChild(updateButton);
+
+                updateButton.addEventListener("click", (event) => {
+                    event.preventDefault();
+
+                    // Convert the form data to a JSON object
+                    const formData = new FormData(form);
+                    const data = Array.from(formData.entries()).reduce(
+                        (obj, [key, value]) => {
+                            obj[dict[key]] = value;
+                            return obj;
+                        },
+                        {}
+                    );
+
+                    // Send the data to your API
+                    fetch(
+                        `http://localhost:9080/update_product/${data.product_id}`,
+                        {
+                            method: "PUT",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify(data),
+                        }
+                    )
+                        .then((response) => response.json())
+                        .then((data) => {
+                            console.log(data);
+                        });
+                });
+            })
+            .catch((error) => {
+                //Find old update and add buttons and remove them
+                const oldUpdateButton = document.getElementById("update-button");
+                if (oldUpdateButton) {
+                    oldUpdateButton.remove();
+                }
+
+                const oldAddButton = document.getElementById("add-button");
+                if (oldAddButton) {
+                    oldAddButton.remove();
+                }
+
+                const addButton = document.createElement("button");
+                addButton.id = "add-button";
+                addButton.textContent = "Add Product";
+                form.appendChild(addButton);
+
+                addButton.addEventListener("click", (event) => {
+                    event.preventDefault();
+
+                    // Convert the form data to a JSON object
+                    const formData = new FormData(form);
+                    const data = Array.from(formData.entries()).reduce(
+                        (obj, [key, value]) => {
+                            obj[dict[key]] = value;
+                            return obj;
+                        },
+                        {}
+                    );
+
+                    fetch("http://localhost:9080/add_product", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(data),
+                    })
+                        .then((response) => response.json())
+                        .then((data) => {
+                            console.log(data);
+                        });
+
+                        });
+                    });
+    });
+
+    const updateButton = document.createElement("button");
+    updateButton.id = "update-button";
+    updateButton.textContent = "Update Product";
+
+    updateButton.addEventListener("click", (event) => {
+        event.preventDefault();
+
+        // Convert the form data to a JSON object
+        const formData = new FormData(form);
+        const data = Array.from(formData.entries()).reduce(
+            (obj, [key, value]) => {
+                obj[dict[key]] = value;
+                return obj;
+            },
+            {}
+        );
+
+        // Send the data to your API
+        fetch(`http://localhost:9080/update_product/${data.product_id}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                console.log(data);
+            });
+    });
+    
     form.appendChild(submitButton);
+    form.appendChild(updateButton);
     formContainer.appendChild(form);
 
     form.addEventListener("submit", function (event) {
@@ -91,19 +232,6 @@ function createForm(data) {
             },
             {}
         );
-
-        // Send the data to your API
-        fetch("http://localhost:9080/add_product", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(data),
-        })
-            .then((response) => response.json())
-            .then((data) => {
-                console.log(data);
-            });
     });
 
     form.scrollIntoView({ behavior: "smooth" });
@@ -117,10 +245,13 @@ document
         clearTimeout(debounceTimeout);
         debounceTimeout = setTimeout(() => {
             event.preventDefault();
+            // document.getElementById(
+            //     "generate-listing-section"
+            // ).style.display = "none";
 
             const query = document.getElementById("search-query").value;
 
-            fetch(`http://localhost:9080/search_product/${query}`)
+            fetch(`http://localhost:9080/search_products/${query}`)
                 .then((response) => {
                     console.log(response);
                     // Also log the http exception detail
@@ -221,7 +352,7 @@ document
                         ).style.display = "block";
                     });
                 });
-        },500);
+        }, 500);
     });
 
 document
