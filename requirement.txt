@@ -1,5 +1,4 @@
 google.generativeai
-IPython.display
 fastapi
 rembg
 uvicorn
