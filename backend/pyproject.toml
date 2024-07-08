@@ -1,0 +1,31 @@
+[project]
+name = "Data-Dynamo"
+version = "0.1.0"
+description = "Default template for PDM package"
+authors = [
+    {name = "Pratik Jindal", email = "117007380+jindalpratik@users.noreply.github.com"},
+]
+dependencies = [
+    "google-generativeai",
+    "Ipython",
+    "fastapi",
+    "rembg",
+    "uvicorn",
+    "python-multipart",
+    "python-dotenv",
+]
+requires-python = "==3.12.4"
+readme = "../README.md"
+license = {text = "MIT"}
+
+
+[tool.pdm]
+distribution = false
+
+
+[tool.pdm.scripts]
+app = "python src/data_dynamo/main.py"
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"

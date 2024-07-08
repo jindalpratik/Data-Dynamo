@@ -121,10 +121,6 @@ async def generate_blog_post(image: UploadFile = File(...)):
     response.resolve()
     return convert_gemini_output_to_json(response.text)
 
-if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
-    uvicorn.run("main:app", host="0.0.0.0", port=9080, reload=True)
-
 @app.put("/update_product/{product_id}")
 async def update_product(product_id: str, product: Product):
     conn = sqlite3.connect('database.sqlite')
@@ -255,3 +251,8 @@ async def search_product(query: str):
     ]
 
     return {"product": product_details}
+
+
+if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
+    uvicorn.run("main:app", host="0.0.0.0", port=9080, reload=True)
