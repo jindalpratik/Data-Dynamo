@@ -7,8 +7,7 @@ RUN pip install -U pdm
 # disable update check
 ENV PDM_CHECK_UPDATE=false
 # copy files
-COPY pyproject.toml pdm.lock .env /project/
-COPY src/ /project/src
+COPY backend/pyproject.toml backend/pdm.lock /project/
 
 # install dependencies and project into the local packages directory
 WORKDIR /project
@@ -21,7 +20,7 @@ FROM python:$PYTHON_BASE
 COPY --from=builder /project/.venv/ /project/.venv
 ENV PATH="/project/.venv/bin:$PATH"
 # set command/entrypoint, adapt to fit your needs
-COPY src /project/src
+COPY backend/src /project/src
 COPY .env /project/
 WORKDIR /project
 CMD ["python", "src/data_dynamo/main.py"]
