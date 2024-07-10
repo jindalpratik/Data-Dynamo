@@ -12,12 +12,14 @@ COPY backend/pyproject.toml backend/pdm.lock /project/
 # install dependencies and project into the local packages directory
 WORKDIR /project
 RUN pdm install --check --prod --no-editable
+ADD https://github.com/danielgatis/rembg/releases/download/v0.0.0/u2net.onnx /root/.u2net/
 
 # run stage
 FROM python:$PYTHON_BASE
 
 # retrieve packages from build stage
 COPY --from=builder /project/.venv/ /project/.venv
+COPY --from=builder /root/.u2net/ /root/.u2net
 ENV PATH="/project/.venv/bin:$PATH"
 # set command/entrypoint, adapt to fit your needs
 COPY backend/src /project/src
